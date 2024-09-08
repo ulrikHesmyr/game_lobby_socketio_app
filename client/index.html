@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Game Lobby</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Game Lobby</h1>
+    <div id="status">Waiting to join a game...</div>
+    <script>
+        const socket = io(); // Connect to the default namespace
+
+        socket.on('connect', () => {
+            console.log('Connected to the server as:', socket.id);
+        });
+
+        // Listen for lobby join confirmation
+        socket.on('lobby_joined', (data) => {
+            console.log(data.message);
+            document.getElementById('status').innerText = 'Waiting for other players...';
+        });
+
+        // Listen for game start
+        socket.on('game_start', ({ roomName, playerId }) => {
+            console.log('Game is starting in room:', roomName);
+            document.getElementById('status').innerText = `Playing in room: ${roomName}`;
+
+            // Example to emit a game event
+            socket.emit('game_event', { action: 'move', direction: 'left' });
+        });
+
+        // Handle game events
+        socket.on('game_event', (data) => {
+            console.log('Received game event:', data);
+            // Handle game event in the client-side logic
+        });
+    </script>
+</body>
+</html>
